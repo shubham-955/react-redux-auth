@@ -1,24 +1,34 @@
-import logo from './logo.svg';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
+import { Dashboard } from './Pages/Dashboard';
+import { Login } from './Pages/Login';
 
 function App() {
+  const isUserLoggedIn = useSelector((state) => state.auth.isUserLoggedIn)
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isUserLoggedIn) {
+      if (pathname === "/login") navigate("/")
+      else navigate(pathname)
+    } else {
+      navigate("/login")
+    }
+  }, [isUserLoggedIn, pathname])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <div className="container">
+      <Routes>
+        {isUserLoggedIn ?
+          (<Route path="/*" element={<Dashboard />} />)
+          :
+          <Route path='login' element={<Login />} />
+        }
+      </Routes>
+    </div >
   );
 }
 
